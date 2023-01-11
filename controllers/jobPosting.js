@@ -26,6 +26,12 @@ exports.createJobPosting = async (req, res) => {
 
 exports.getJobPostings = async (req, res) => {
   try {
+    // Set default values for pagination parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Create the query object
     let query = JobPosting.find();
 
     // Filter by experience level
@@ -40,8 +46,14 @@ exports.getJobPostings = async (req, res) => {
     }
 
     // Execute the query
-    const jobPostings = await query.exec();
-    res.json(jobPostings);
+    const jobPostings = await query.skip(skip).limit(limit).exec();
+    const count = await JobPosting.countDocuments(query.getQuery()).exec();
+
+    res.json({
+      jobPostings,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
