@@ -10,7 +10,15 @@ router.post(
 );
 router.get("/", jobPostingController.getJobPostings);
 router.get("/:id", jobPostingController.getJobPosting);
-router.patch("/:id", jobPostingController.updateJobPosting);
-router.delete("/:id", jobPostingController.deleteJobPosting);
+router.patch(
+  "/:id",
+  userController.verifyUser,
+  jobPostingController.updateJobPosting
+);
+router.delete(
+  "/:id",
+  userController.verifyUser,
+  jobPostingController.deleteJobPosting
+);
 
 module.exports = router;

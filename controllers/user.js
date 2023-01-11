@@ -52,8 +52,6 @@ exports.loginUser = async (req, res) => {
 exports.verifyUser = async (req, res, next) => {
   try {
     // Extract the token from the request headers
-    console.log("we are here");
-    console.log(req.headers);
     const token = req.headers.authorization;
     if (!token) {
       return res.status(401).json({ message: "Not authorized" });

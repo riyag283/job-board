@@ -34,8 +34,6 @@ exports.getJobPostings = async (req, res) => {
 exports.getJobPosting = async (req, res) => {
   try {
     const jobPosting = await JobPosting.findById(req.params.id);
-    console.log(jobPosting);
-    console.log(req.params.id);
     if (jobPosting == null) {
       return res.status(404).json({ message: "Cannot find jobPosting" });
     }
@@ -47,15 +45,28 @@ exports.getJobPosting = async (req, res) => {
 
 exports.updateJobPosting = async (req, res) => {
   try {
-    const jobPosting = await JobPosting.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    if (jobPosting == null) {
-      return res.status(404).json({ message: "Cannot find jobPosting" });
+    // find user by id
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
-    res.json(jobPosting);
+
+    // find jobPosting by id and check if createdBy matches user id
+    const jobPosting = await JobPosting.findOne({
+      _id: req.params.id,
+      createdBy: user._id,
+    });
+    if (!jobPosting) {
+      return res.status(404).json({
+        message:
+          "You are not authorized to update this jobPosting or jobPosting not found",
+      });
+    }
+
+    //update the jobPosting
+    Object.assign(jobPosting, req.body);
+    const updatedJobPosting = await jobPosting.save();
+    res.json(updatedJobPosting);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -63,10 +74,18 @@ exports.updateJobPosting = async (req, res) => {
 
 exports.deleteJobPosting = async (req, res) => {
   try {
-    const jobPosting = await JobPosting.findByIdAndRemove(req.params.id);
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const jobPosting = await JobPosting.findById(req.params.id);
     if (jobPosting == null) {
       return res.status(404).json({ message: "Cannot find jobPosting" });
     }
+    if (jobPosting.createdBy.toString() !== user._id.toString()) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+    await jobPosting.remove();
     res.json({ message: "Deleted JobPosting" });
   } catch (err) {
     res.status(500).json({ message: err.message });
