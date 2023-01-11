@@ -6,7 +6,6 @@ exports.createJobPosting = async (req, res) => {
     // Check if the user exists
     const user = await User.findById(req.user.id);
     if (!user) {
-      console.log("hi");
       return res.status(404).json({ message: "User not found" });
     }
 
