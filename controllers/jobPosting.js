@@ -8,7 +8,9 @@ exports.createJobPosting = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    if (user.role !== "admin") {
+      return res.status(401).json({ message: "Not authorized" });
+    }
     // Create the job posting
     const jobPosting = new JobPosting({
       ...req.body,

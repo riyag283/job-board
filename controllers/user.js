@@ -66,9 +66,6 @@ exports.verifyUser = async (req, res, next) => {
     if (!user) {
       return res.status(401).json({ message: "Not authorized" });
     }
-    if (user.role !== "admin") {
-      return res.status(401).json({ message: "Not authorized" });
-    }
     // Attach the user to the request object and call the next middleware
     req.user = user;
     next();
