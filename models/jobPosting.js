@@ -13,10 +13,13 @@ const jobPostingSchema = new mongoose.Schema(
     requiredSkills: [
       {
         type: String,
+        enum: ["JavaScript", "Node.js", "React", "MongoDB", "GraphQL"],
+        required: true,
       },
     ],
     experienceLevel: {
       type: String,
+      enum: ["internship", "entry-level", "mid-level", "senior-level"],
       required: true,
     },
     createdBy: {

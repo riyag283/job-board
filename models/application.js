@@ -7,17 +7,15 @@ const applicationSchema = new mongoose.Schema(
       ref: "JobPosting",
       required: true,
     },
-    applicantName: {
-      type: String,
-      required: true,
-    },
-    applicantEmail: {
-      type: String,
-      required: true,
-    },
     coverLetter: {
       type: String,
       required: true,
+      validate: {
+        validator: function (v) {
+          return /(^#+\s.+)/.test(v);
+        },
+        message: (props) => `Provide cover letter in a valid Markdown format!`,
+      },
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

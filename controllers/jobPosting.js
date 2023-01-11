@@ -26,7 +26,21 @@ exports.createJobPosting = async (req, res) => {
 
 exports.getJobPostings = async (req, res) => {
   try {
-    const jobPostings = await JobPosting.find();
+    let query = JobPosting.find();
+
+    // Filter by experience level
+    if (req.query.experienceLevel) {
+      query = query.where("experienceLevel").equals(req.query.experienceLevel);
+    }
+
+    // Filter by required skills
+    if (req.query.requiredSkills) {
+      const requiredSkills = req.query.requiredSkills.split(",");
+      query = query.where("requiredSkills").in(requiredSkills);
+    }
+
+    // Execute the query
+    const jobPostings = await query.exec();
     res.json(jobPostings);
   } catch (err) {
     res.status(500).json({ message: err.message });

@@ -33,7 +33,22 @@ exports.createApplication = async (req, res) => {
 exports.getApplications = async (req, res) => {
   try {
     const applications = await Application.find();
-    res.json(applications);
+    const applicationsWithUser = await Promise.all(
+      applications.map(async (application) => {
+        const user = await User.findById(application.createdBy);
+        if (user) {
+          return {
+            ...application._doc,
+            applicantName: user.name,
+            applicantEmail: user.email,
+          };
+        }
+      })
+    );
+    const filteredApplications = applicationsWithUser.filter(
+      (application) => application !== undefined
+    );
+    res.json(filteredApplications);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -45,7 +60,12 @@ exports.getApplication = async (req, res) => {
     if (application == null) {
       return res.status(404).json({ message: "Cannot find application" });
     }
-    res.json(application);
+    const user = await User.findById(application.createdBy);
+    res.json({
+      ...application._doc,
+      applicantName: user.name,
+      applicantEmail: user.email,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
