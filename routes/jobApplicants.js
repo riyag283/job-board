@@ -6,7 +6,7 @@ const userController = require("../controllers/user");
 router.get(
   "/:id",
   userController.verifyUser,
-  applicationController.getMyApplications
+  jobApplicantsController.getMyApplications
 );
 
 module.exports = router;

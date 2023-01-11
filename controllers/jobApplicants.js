@@ -1,3 +1,9 @@
+const Application = require("../models/Application");
+const JobPosting = require("../models/JobPosting");
+const User = require("../models/User");
+
+const mongoose = require("mongoose");
+
 exports.getMyApplications = async (req, res) => {
   try {
     const jobPosting = await JobPosting.findById(req.params.id);

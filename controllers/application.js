@@ -2,8 +2,6 @@ const Application = require("../models/Application");
 const JobPosting = require("../models/JobPosting");
 const User = require("../models/User");
 
-const mongoose = require("mongoose");
-
 exports.createApplication = async (req, res) => {
   try {
     // Check if the job posting exists
