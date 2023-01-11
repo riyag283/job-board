@@ -7,6 +7,7 @@ const app = express();
 const jobPostingRoutes = require("./routes/jobPosting");
 const userRoutes = require("./routes/user");
 const applicationRoutes = require("./routes/application");
+const jobSearchRoutes = require("./routes/jobApplicants");
 
 // Connect to MongoDB
 mongoose.connect("mongodb://localhost/job-board", {
@@ -21,6 +22,7 @@ app.use(bodyParser.json());
 app.use("/job-board/job-postings", jobPostingRoutes);
 app.use("/job-board", userRoutes);
 app.use("/job-board/applications", applicationRoutes);
+app.use("/job-board/myApplicants", jobSearchRoutes);
 
 // Start the server
 const port = process.env.PORT || 5000;
