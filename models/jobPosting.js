@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { skills, experienceLevel } = require("../constants");
 
 const jobPostingSchema = new mongoose.Schema(
   {
@@ -10,16 +11,10 @@ const jobPostingSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    requiredSkills: [
-      {
-        type: String,
-        enum: ["JavaScript", "Node.js", "React", "MongoDB", "GraphQL"],
-        required: true,
-      },
-    ],
+    requiredSkills: skills,
     experienceLevel: {
       type: String,
-      enum: ["internship", "entry-level", "mid-level", "senior-level"],
+      enum: experienceLevel,
       required: true,
     },
     createdBy: {

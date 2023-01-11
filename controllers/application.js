@@ -32,7 +32,15 @@ exports.createApplication = async (req, res) => {
 
 exports.getApplications = async (req, res) => {
   try {
-    const applications = await Application.find();
+    // Set default values for pagination parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Find all applications
+    const applications = await Application.find().skip(skip).limit(limit);
+
+    // Map over the applications and retrieve the user details
     const applicationsWithUser = await Promise.all(
       applications.map(async (application) => {
         const user = await User.findById(application.createdBy);
@@ -45,10 +53,21 @@ exports.getApplications = async (req, res) => {
         }
       })
     );
+
+    // Filter out any applications that were not found
     const filteredApplications = applicationsWithUser.filter(
       (application) => application !== undefined
     );
-    res.json(filteredApplications);
+
+    // Get the count of all applications
+    const count = await Application.countDocuments();
+    // Calculate total pages
+    const totalPages = Math.ceil(count / limit);
+    res.json({
+      applications: filteredApplications,
+      currentPage: page,
+      totalPages: totalPages,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

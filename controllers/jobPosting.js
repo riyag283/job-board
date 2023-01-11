@@ -1,5 +1,6 @@
 const JobPosting = require("../models/JobPosting");
 const User = require("../models/User");
+const { skills, experienceLevel } = require("../constants");
 
 exports.createJobPosting = async (req, res) => {
   try {
@@ -36,13 +37,25 @@ exports.getJobPostings = async (req, res) => {
 
     // Filter by experience level
     if (req.query.experienceLevel) {
+      if (!experienceLevel.includes(req.query.experienceLevel)) {
+        res.status(400).json({
+          message:
+            "Invalid experience level, Please provide valid experience level",
+        });
+        return;
+      }
       query = query.where("experienceLevel").equals(req.query.experienceLevel);
     }
 
     // Filter by required skills
     if (req.query.requiredSkills) {
-      const requiredSkills = req.query.requiredSkills.split(",");
-      query = query.where("requiredSkills").in(requiredSkills);
+      if (!skills.includes(req.query.requiredSkills)) {
+        res
+          .status(400)
+          .json({ message: "Invalid skill, Please provide valid skill" });
+        return;
+      }
+      query = query.where("requiredSkills").equals(req.query.requiredSkills);
     }
 
     // Execute the query
